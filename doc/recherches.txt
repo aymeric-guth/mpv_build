@@ -1,0 +1,5 @@
+pkg-config
+LDFLAGS CFLAGS
+cross-compilation
+dynamic lib
+static lib

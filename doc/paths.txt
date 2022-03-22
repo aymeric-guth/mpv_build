@@ -1,0 +1,51 @@
+warnings
+libavformat
+libavutil
+
+
+CFLAGS (Headers)
+/usr/include
+/usr/local/include
+
+LDFLAGS (so ?)
+/lib
+/lib64
+/lib/x86_64-linux-gnu
+/usr/lib
+/usr/lib64 
+/usr/x86_64-linux-gnu/lib 
+/usr/x86_64-linux-gnu/lib64 
+/usr/lib/x86_64-linux-gnu 
+/usr/lib/x86_64-linux-gnu64 
+/usr/local/lib 
+/usr/local/lib/x86_64-linux-gnu 
+/usr/local/lib32 
+/usr/local/lib64 
+/usr/local/libx32
+
+
+
+ld: warning: directory not found for option '-L/usr/local/lib32'
+ld: warning: directory not found for option '-L/usr/local/lib64'
+ld: warning: directory not found for option '-L/usr/local/libx32'
+
+
+export LDFLAGS="-L/lib -L/lib32 -L/lib64 -L/libx32"
+
+with open('./x86_64-apple-darwin18/res.log', 'r') as f:
+  data = f.read()
+res = {'/'.join(i.split('/')[:-1]) for i in data.split('\n') if i}
+with open('reres.log', 'a') as f:
+   for i in res:
+      f.write(i + '\n')
+
+/opt/osxcross/SDK/MacOSX10.14.sdk/
+/usr/include
+
+
+/opt/osxcross/include
+/opt/osxcross/SDK/MacOSX10.14.sdk/usr/include
+
+
+/opt/osxcross/lib
+/opt/osxcross/SDK/MacOSX10.14.sdk/usr/lib

@@ -1,0 +1,16 @@
+--enable-lgpl
+--enable-gpl
+--enable-libmpv-shared
+--disable-libmpv-static
+--disable-static-build
+--disable-debug-build
+--enable-iconv
+--disable-lua
+--disable-javascript
+--enable-libass
+--enable-zlib
+--enable-libbluray
+--enable-uchardet
+--enable-rubberband
+--enable-sdl2
+--enable-macos-10-14-features

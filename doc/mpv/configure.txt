@@ -1,0 +1,174 @@
+Checking for waf version in 1.8.4-2.1.0  : ok
+Checking for program 'x86_64-apple-darwin18-gcc' : o64-clang
+Checking for program 'x86_64-apple-darwin18-pkg-config' : /opt/osxcross/bin/x86_64-apple-darwin18-pkg-config
+Checking for program 'x86_64-apple-darwin18-ar'         : /opt/osxcross/bin/x86_64-apple-darwin18-ar
+Checking for program 'rst2html'                         : not found
+Checking for program 'rst2man'                          : not found
+Checking for program 'rst2pdf'                          : not found
+Checking for program 'x86_64-apple-darwin18-windres'    : not found
+Checking for program 'perl'                             : /usr/bin/perl
+Checking for 'gcc' (C compiler)                         : not found
+Checking for 'clang' (C compiler)                       : o64-clang
+Detected target OS:                                     : os-darwin
+Checking for macOS SDK                                  : /opt/osxcross/bin/../SDK/MacOSX10.14.sdk (version found: 10.14)
+Checking for swift (Swift compiler)                     : not found
+Checking for compiler flags -std=c11                    : yes
+Checking for compiler flags -Werror -Werror=implicit-function-declaration : yes
+Checking for compiler flags -Werror -Wno-error=deprecated-declarations    : yes
+Checking for compiler flags -Werror -Wno-error=unused-function            : yes
+Checking for compiler flags -Werror -Wempty-body                          : yes
+Checking for compiler flags -Werror -Wdisabled-optimization               : yes
+Checking for compiler flags -Werror -Wstrict-prototypes                   : yes
+Checking for compiler flags -Werror -Wno-format-zero-length               : yes
+Checking for compiler flags -Werror -Werror=format-security               : yes
+Checking for compiler flags -Werror -Wno-redundant-decls                  : yes
+Checking for compiler flags -Werror -Wvla                                 : yes
+Checking for compiler flags -Werror -Wno-format-truncation                : no
+Checking for compiler flags -Werror -Wimplicit-fallthrough                : yes
+Checking for compiler flags -Werror -fno-math-errno                       : yes
+Checking for LGPL (version 2.1 or later) build                            : yes
+Checking for GPL (version 2 or later) build                               : lgpl found
+Checking for mpv CLI player                                               : disabled
+Checking for shared library                                               : yes
+Checking for static library                                               : disabled
+Checking for static build                                                 : disabled
+Checking for whether to include binary compile time                       : yes
+Checking for whether to optimize                                          : yes
+Checking for whether to compile-in debugging information                  : disabled
+Checking for unit tests (development only)                                : disabled
+Checking for enable ta leak report by default (development only)          : disabled
+Checking for manpage generation                                           : disabled
+Checking for html manual generation                                       : disabled
+Checking for pdf manual generation                                        : disabled
+Checking for dynamic loader                                               : yes
+Checking for C plugins                                                    : yes
+Checking for inline assembly (currently without effect)                   : yes
+Checking for GCC vector instructions                                      : yes
+Checking for generate a clang compilation database                        : disabled
+Checking for static Swift linking                                         : disabled
+Checking for compiler support for noexecstack                             : no
+Checking for linker support for --nxcompat --no-seh --dynamicbase         : no
+Checking for -lm                                                          : yes
+Checking for MinGW                                                        : os-win32 not found
+Checking for POSIX environment                                            : yes
+Checking for Android environment                                          : no
+Checking for tvOS environment                                             : no
+Checking for Android EGL support                                          : android not found
+Checking for development environment                                      : yes
+Checking for macOS Swift build tools                                      : no ('swift >= 4.1' not found, found None)
+Checking for Universal Windows Platform                                   : disabled
+Checking for win32 desktop APIs                                           : os-win32 not found
+Checking for internal pthread wrapper for win32 (Vista+)                  : posix found
+Checking for POSIX threads                                                : yes
+Checking for pthread runtime debugging wrappers                           : disabled
+Checking for C11 stdatomic.h                                              : yes
+Checking for linking with -lrt                                            : no
+Checking for iconv                                                        : disabled
+Checking for w32/dos paths                                                : os-win32 not found
+Checking for glob() POSIX support                                         : yes
+Checking for glob() win32 replacement                                     : posix found
+Checking for any glob() support                                           : yes
+Checking for vt.h                                                         : no
+Checking for consio.h                                                     : no
+Checking for gbm.h                                                        : no
+Checking for GLIBC API for setting thread name                            : no
+Checking for OSX API for setting thread name                              : yes
+Checking for BSD API for setting thread name                              : osx-thread-name found
+Checking for BSD's fstatfs()                                              : yes
+Checking for Linux's fstatfs()                                            : os-linux not found
+Checking for Linux's input-event-codes.h                                  : no
+Checking for Lua                                                          : disabled
+Checking for Javascript (MuJS backend)                                    : disabled
+Checking for SSA/ASS support                                              : yes
+Checking for zlib                                                         : disabled
+Checking for Bluray support                                               : disabled
+Checking for dvdnav support                                               : disabled
+Checking for cdda support (libcdio)                                       : disabled
+Checking for uchardet support                                             : disabled
+Checking for librubberband support                                        : disabled
+Checking for libzimg support (high quality software scaler)               : disabled
+Checking for LCMS2 support                                                : disabled
+Checking for VapourSynth filter bridge                                    : disabled
+Checking for libarchive wrapper for reading zip files and more            : disabled
+Checking for DVB input module                                             : disabled
+Checking for SDL2                                                         : disabled
+Checking for SDL2 gamepad input                                           : disabled
+Checking for FFmpeg library                                               : yes
+Checking for libavdevice                                                  : yes
+Checking for SDL2 audio output                                            : sdl2 not found
+Checking for OSSv4 audio output                                           : gpl not found
+Checking for PipeWire audio output                                        : no ('libpipewire-0.3 >= 0.3.0' not found)
+Checking for sndio audio input/output                                     : disabled
+Checking for PulseAudio audio output                                      : no ('libpulse >= 1.0' not found)
+Checking for JACK audio output                                            : gpl not found
+Checking for OpenAL audio output                                          : disabled
+Checking for OpenSL ES audio output                                       : no
+Checking for ALSA audio output                                            : no ('alsa >= 1.0.18' not found)
+Checking for CoreAudio audio output                                       : yes
+Checking for AudioUnit output for iOS                                     : no
+Checking for WASAPI audio output                                          : os-win32 not found
+Checking for SDL2 video output                                            : sdl2 not found
+Checking for Cocoa                                                        : yes
+Checking for DRM                                                          : vt.h not found
+Checking for GBM                                                          : gbm.h not found
+Checking for wayland-scanner                                              : no
+Checking for wayland-protocols                                            : no ('wayland-protocols >= 1.15' not found)
+Checking for Wayland                                                      : wayland-protocols not found
+Checking for Linux's memfd_create()                                       : wayland not found
+Checking for X11                                                          : gpl not found
+Checking for Xv video output                                              : x11 not found
+Checking for OpenGL Cocoa Backend                                         : yes
+Checking for OpenGL X11/GLX (deprecated/legacy)                           : disabled
+Checking for Raspberry Pi support                                         : disabled
+Checking for EGL 1.4                                                      : no ('egl' not found)
+Checking for OpenGL X11 EGL Backend                                       : x11 not found
+Checking for OpenGL DRM EGL Backend                                       : drm not found
+Checking for OpenGL Wayland Backend                                       : wayland not found
+Checking for OpenGL Win32 Backend                                         : win32-desktop not found
+Checking for OpenGL/DirectX Interop Backend                               : gl-win32 not found
+Checking for OpenGL ANGLE headers                                         : os-win32 not found
+Checking for OpenGL Win32 ANGLE Library                                   : egl-angle not found
+Checking for OpenGL Win32 ANGLE Backend                                   : egl-angle not found
+Checking for VDPAU acceleration                                           : x11 not found
+Checking for VDPAU with OpenGL/X11                                        : vdpau not found
+Checking for VAAPI acceleration                                           : x11 not found
+Checking for VAAPI (X11 support)                                          : vaapi not found
+Checking for VAAPI (Wayland support)                                      : vaapi not found
+Checking for VAAPI (DRM/EGL support)                                      : vaapi not found
+Checking for VAAPI EGL on X11                                             : vaapi-x11 not found
+Checking for VAAPI EGL                                                    : vaapi-x-egl not found
+Checking for CACA                                                         : gpl not found
+Checking for JPEG support                                                 : yes
+Checking for Direct3D support                                             : win32-desktop not found
+Checking for libshaderc SPIR-V compiler (shared library)                  : no ('shaderc' not found)
+Checking for libshaderc SPIR-V compiler (static library)                  : no ('shaderc_static' not found)
+Checking for libshaderc SPIR-V compiler                                   : shaderc-shared not found
+Checking for SPIRV-Cross SPIR-V shader converter (shared library)         : no ('spirv-cross-c-shared' not found)
+Checking for SPIRV-Cross SPIR-V shader converter (static library)         : no ('spirv-cross' not found)
+Checking for SPIRV-Cross SPIR-V shader converter                          : spirv-cross-shared not found
+Checking for Direct3D 11 video output                                     : win32-desktop not found
+Checking for iOS OpenGL ES hardware decoding interop support              : no
+Checking for OpenGL without platform-specific code (e.g. for libmpv)      : yes
+Checking for OpenGL context support                                       : yes
+Checking for libplacebo support                                           : no ('libplacebo >= 4.157.0' not found)
+Checking for libplacebo v4.199+, needed for vo_gpu_next                   : libplacebo not found
+Checking for Vulkan context support                                       : libplacebo not found
+Checking for VAAPI libplacebo                                             : vaapi not found
+Checking for EGL helper functions                                         : egl not found
+Checking for Sixel                                                        : no ('libsixel >= 1.5' not found)
+Checking for libavcodec videotoolbox hwaccel                              : yes
+Checking for Videotoolbox with OpenGL                                     : disabled
+Checking for D3D11VA hwaccel                                              : os-win32 not found
+Checking for DXVA2 hwaccel                                                : d3d-hwaccel not found
+Checking for OpenGL/DirectX Interop Backend DXVA2 interop                 : gl-dxinterop not found
+Checking for CUDA Headers and dynamic loader                              : no ('ffnvcodec >= 8.2.15.7' not found)
+Checking for CUDA acceleration                                            : ffnvcodec not found
+Checking for CUDA with graphics interop                                   : cuda-hwaccel not found
+Checking for Raspberry Pi MMAL hwaccel                                    : rpi not found
+Checking for w32 executable                                               : os-win32 not found
+Checking for macOS Touch Bar support                                      : yes
+Checking for macOS 10.11 SDK Features                                     : yes
+Checking for macOS 10.12.2 SDK Features                                   : yes
+Checking for macOS 10.14 SDK Features                                     : disabled
+Checking for macOS Media Player support                                   : swift not found
+Checking for macOS libmpv backend                                         : swift not found

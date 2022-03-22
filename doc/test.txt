@@ -1,0 +1,77 @@
+installing lame ...
+installing libvorbis ...
+installing libogg ...
+installing libopus ...
+installing librsvg ...
+installing glib2 ...
+installing libffi ...
+installing pcre ...
+installing bzip2 ...
+installing libedit ...
+installing zlib ...
+installing libpixman ...
+installing libpng ...
+installing ossp-uuid ...
+installing db48 ...
+installing libxml2 ...
+installing libjpeg-turbo ...
+installing tiff ...
+installing zstd ...
+installing lz4 ...
+installing vala ...
+
+
+h265
+
+
+<arch><sub>-<vendor>-<sys>-<abi>
+x86_64-apple-darwin18-mach
+
+
+CMAKE_FIND_ROOT_PATH_MODE_PROGRAM
+CMAKE_FIND_ROOT_PATH_MODE_INCLUDE
+CMAKE_FIND_ROOT_PATH_MODE_LIBRARY
+
+
+
+
+
+
+
+OSXCROSS_HOST=x86_64-apple-darwin18
+OSXCROSS_TARGET_DIR=/opt/osxcross
+OSXCROSS_TARGET=x86_64-apple-darwin18-mach
+OSXCROSS_SDK=/opt/osxcross/SDK/MacOSX10.14.sdk
+clang-10
+
+find . -regex ".*\.(cpp|hpp)" -print0 | xargs -0 grep -n -d skip "ubsan"
+find -E $1 -regex ".*\.($2)" -print0 | xargs -0 grep -n -d skip $3
+
+find . -iname '*.cpp' -print0 | xargs -0 grep -n "ubsan"
+
+
+libmodplug
+libopenmpt
+libopus
+
+
+RUN cmake ../ -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TARGET_DIR}/toolchain.cmake -DCMAKE_INSTALL_PREFIX_PATH="/opt/x86_64-apple-darwin18"
+-DENABLE_UBSAN=0
+
+cmake ../ -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TARGET_DIR}/toolchain.cmake -DBUILD_SHARED_LIBS="ON" -DCMAKE_INSTALL_LIBDIR="/opt/x86_64-apple-darwin18"
+
+
+
+./configure --prefix=/opt/x86_64-apple-darwin18 --arch=x86_64 --target-os=darwin --cross-prefix=x86_64-apple-darwin18- --cc=o64-clang --cxx=o64-clang++ --enable-shared --disable-static --disable-ffplay --disable-ffprobe --enable-gpl --enable-version3 --enable-nonfree --enable-libgme --enable-libmodplug --pkg-config=pkg-config
+x86_64-apple-darwin18-pkg-config --list-all
+pkg-config --list-all
+
+
+CC=o64-clang CXX=o64-clang++ ./configure --host=x86_64-apple-darwin18
+
+
+CC="o64-clang" CXX="o64-clang++" CFLAGS="-I/opt/x86_64-apple-darwin18/include" ./configure --prefix=/opt/x86_64-apple-darwin18 --arch=x86_64 --target-os=darwin --cross-prefix=x86_64-apple-darwin18- --enable-shared --enable-static --disable-ffplay --disable-ffprobe --enable-gpl --enable-version3 --enable-nonfree --enable-libgme --enable-libmodplug
+
+
+
+./configure --prefix=/opt/x86_64-apple-darwin18 --arch=x86_64 --target-os=darwin --cross-prefix=x86_64-apple-darwin18- --cc=o64-clang --cxx=o64-clang++ --pkg-config=pkg-config --enable-shared --enable-static --disable-ffplay --disable-ffprobe --enable-gpl --enable-version3 --enable-nonfree --enable-libgme --enable-libmodplug
