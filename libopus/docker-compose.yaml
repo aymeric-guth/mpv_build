@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  os:
+    volumes:
+      - ./x86_64-apple-darwin18:/opt/x86_64-apple-darwin18
+    network_mode: host
+    build:
+      context: .
+      network: host

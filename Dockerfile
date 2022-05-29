@@ -8,6 +8,10 @@ RUN apt update && apt install -y \
   autoconf \
   automake \
   python3-pip \
+  git \
+  libtool \
+  gcc \
+  make \
   && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install waftools
 
@@ -55,7 +59,31 @@ RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
   # -DBUILD_SHARED_LIBS="OFF" \
-  -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+  -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib"
+RUN make -j4 && make install
+
+
+FROM stagging AS stage-libopus
+RUN git clone https://github.com/xiph/opus
+WORKDIR /opus
+RUN ./autogen.sh
+
+
+FROM stage-libopus AS build-libopus
+RUN \
+  PATH=/opt/osxcross/bin:$PATH \
+  CC="o64-clang" \
+  CXX="o64-clang++" \
+#   CFLAGS="-I${PREFIX}/include -I${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/include" \
+#   LDFLAGS="-L${PREFIX}/lib" \
+  ./configure \
+    --enable-shared=yes \
+    --enable-static=no \
+    --prefix=${PREFIX} \
+    # --exec-prefix=${PREFIX} \
+    # --program-prefix=
+    --host="x86_64-apple-darwin18"
 RUN make -j4 && make install
 
 
@@ -70,36 +98,8 @@ RUN git clone https://github.com/FFmpeg/FFmpeg
 ENV OSXCROSS_PKG_CONFIG_LIBDIR="/${PREFIX}/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/libexec/openssl3/lib/pkgconfig"
 COPY --from=build-libgme ${PREFIX} ${PREFIX}
 COPY --from=build-libmodplug ${PREFIX} ${PREFIX}
+COPY --from=build-libopus ${PREFIX} ${PREFIX}
 WORKDIR /FFmpeg
-
-
-# FROM stage-ffmpeg AS build-cache-ffmpeg
-# RUN \
-#   CFLAGS="-I${PREFIX}/include" \
-#   LDFLAGS="-L${PREFIX}/lib -lgme -lmodplug" \
-#   ./configure \
-#     ### Standard options
-#     --prefix=${PREFIX} \
-#     ### Licensing options
-#     --enable-gpl \
-#     --enable-version3 \
-#     --enable-nonfree \
-#     ### Configuration options
-#     --disable-static \
-#     --enable-shared \
-#     ### External library support
-#     --enable-libgme \
-#     --enable-libmodplug \
-#     ### Toolchain options
-#     --enable-cross-compile \
-#     --arch=x86_64 \
-#     --target-os=darwin \
-#     --cross-prefix=x86_64-apple-darwin18- \
-#     --cc=o64-clang \
-#     --cxx=o64-clang++ \
-#     --extra-cflags="-I${PREFIX}/include" \
-#     --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug"
-# RUN make -j4
 
 
 FROM stage-ffmpeg AS build-ffmpeg
@@ -129,8 +129,11 @@ RUN \
     ### Component options
     --disable-avdevice \
     --disable-w32threads \
-    --disable-network \
+    # --disable-network \
     --disable-pixelutils \
+    ### Protocols
+    # --disable-protocols \
+    --enable-protocol=tcp \
     ### Individual component options
     ### External library support
     --disable-alsa \
@@ -149,6 +152,7 @@ RUN \
     --disable-zlib \
     --enable-libgme \
     --enable-libmodplug \
+    --enable-libopus \
     ### Toolchain options
     --enable-cross-compile \
     --arch=x86_64 \
@@ -158,13 +162,12 @@ RUN \
     --cxx=o64-clang++ \
     --extra-cflags="-I${PREFIX}/include" \
     # --extra-cflags="-I${PREFIX}/include/libmodplug -I${PREFIX}/include/gme" \
-    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug" \
+    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus" \
     # --extra-ldflags="-L${PREFIX}/lib -static -l:libgme.a -l:libmodplug.a" \
     ### Current
     --disable-decoders \
     --disable-demuxers \
     --disable-parsers \
-    --disable-protocols \
     --disable-filters \
     --disable-bsfs \
     --disable-indevs \
@@ -185,7 +188,7 @@ RUN \
     --enable-demuxer=mp3 \
     --enable-decoder=flac \
     --enable-demuxer=flac \
-    --enable-decoder=opus \
+    # --enable-decoder=opus \
     --enable-decoder=vorbis \
     --enable-demuxer=ogg \
     --enable-decoder=pcm_s16be \
@@ -205,13 +208,17 @@ RUN \
     # --enable-demuxer=ac3 \
     # --enable-demuxer=aa \
     --enable-decoder=alac \
-    --enable-decoder=alac_at \    
+    --enable-decoder=alac_at \
     --enable-demuxer=aax \
     --enable-demuxer=aiff \
     --enable-decoder=mpeg4 \
     --enable-demuxer=mov \
     --enable-decoder=ape \
-    --enable-demuxer=ape
+    --enable-demuxer=ape \
+    --enable-decoder=libopus \
+    # --enable-decoder=opus \
+    --enable-encoder=libopus
+    # --enable-encoder=opus
 RUN make -j4 && make install
 
 
@@ -265,7 +272,7 @@ RUN \
     --disable-uwp \
     --disable-win32-internal-pthreads \
     --disable-pthread-debug \
-    --disable-stdatomic \
+    # --disable-stdatomic \
     --disable-iconv \
     --disable-lua \
     --disable-javascript \
