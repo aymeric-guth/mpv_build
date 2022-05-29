@@ -1,1 +1,4 @@
-* install path libmodplug et libgme
+* install path libmodplug et libgme (pour éviter le patch au déploiement)
+* fork image docker osxcross (pas sur de son maintien)
+
+* build complet ffmpeg (sans installer les dépendances via macports)

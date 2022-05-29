@@ -1,4 +1,4 @@
-MPV="/opt/x86_64-apple-darwin18/bin/mpv"
+MPV="./x86_64-apple-darwin18/bin/mpv --no-video"
 NAS="/Users/yul/.av-mp/mount_point/Audio"
 NAS_CHIPTUNE="${NAS}/Music.Chiptune"
 
@@ -25,7 +25,7 @@ SMPL_M4A="${NAS}/Music/OST/Kill\ Bill/04\ Twisted\ Nerve.m4a"
 SMPL_M4A="${NAS}/Music/OST_Vidya/Fallout/34/01\ Main\ Title.m4a"
 SMPL_APE="${NAS}/Music.ToDo/1st\ Pass/_Classic/Monteverdi\ -\ Complete\ Chamber\ Duets,\ Curtis/CD1/Monteverdi\ -\ Complete\ Chamber\ Duets,\ Curtis\ CD1.ape"
 SMPL_AIF="${NAS}/Music.ToDo/2nd\ Pass/_Jazz/Ed\ Zuccollo\ -\ Ed\ Zuccollo/Spine\ Dancer_76901893\ -\ Ed\ Zuccollo.aif"
-
+SMPL_OPUS="${NAS}/Music.ToDo/2nd\ Pass/_Electro/02.\ NeuroKontrol\ -\ Melankotrip.opus"
 
 # libgme
 echo "libgme .spc"
@@ -60,4 +60,4 @@ eval ${MPV} ${SMPL_APE}
 echo "audio formats .aif"
 eval ${MPV} ${SMPL_AIF}
 echo "audio formats .opus"
-eval ${MPV} "${NAS}/Music.ToDo/2nd\ Pass/_Electro/02.\ NeuroKontrol\ -\ Melankotrip.opus"
+eval ${MPV} ${SMPL_OPUS}

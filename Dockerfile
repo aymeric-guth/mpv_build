@@ -42,7 +42,6 @@ FROM stage-libgme AS build-libgme
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
-  # -DBUILD_SHARED_LIBS="OFF" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DENABLE_UBSAN="0" \
   -DGME_SPC_ISOLATED_ECHO_BUFFER="ON"
@@ -58,9 +57,7 @@ FROM stage-libmodplug AS build-libmodplug
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
-  # -DBUILD_SHARED_LIBS="OFF" \
-  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-  -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib"
+  -DCMAKE_INSTALL_PREFIX="${PREFIX}"
 RUN make -j4 && make install
 
 
@@ -83,7 +80,7 @@ RUN \
     --prefix=${PREFIX} \
     # --exec-prefix=${PREFIX} \
     # --program-prefix=
-    --host="x86_64-apple-darwin18"
+    --host=${OSXCROSS_HOST}
 RUN make -j4 && make install
 
 
@@ -117,7 +114,7 @@ RUN \
     --disable-gray \
     --disable-swscale-alpha \
     ### Program options
-    --disable-ffmpeg \
+    --enable-ffmpeg \
     --disable-ffplay \
     --disable-ffprobe \
     ### Documentation options
@@ -188,9 +185,9 @@ RUN \
     --enable-demuxer=mp3 \
     --enable-decoder=flac \
     --enable-demuxer=flac \
-    # --enable-decoder=opus \
     --enable-decoder=vorbis \
     --enable-demuxer=ogg \
+    --enable-muxer=ogg \
     --enable-decoder=pcm_s16be \
     --enable-decoder=pcm_s16le \
     --enable-demuxer=pcm_s16be \
@@ -211,14 +208,142 @@ RUN \
     --enable-decoder=alac_at \
     --enable-demuxer=aax \
     --enable-demuxer=aiff \
-    --enable-decoder=mpeg4 \
+    # --enable-decoder=mpeg4 \
     --enable-demuxer=mov \
     --enable-decoder=ape \
     --enable-demuxer=ape \
+    --enable-decoder=opus \
+    --enable-encoder=opus \
     --enable-decoder=libopus \
-    # --enable-decoder=opus \
-    --enable-encoder=libopus
-    # --enable-encoder=opus
+    --enable-encoder=libopus \
+    ####################################
+    ### Filters
+    ####################################
+    --enable-filter=abench \
+    --enable-filter=acompressor \
+    --enable-filter=acontrast \
+    --enable-filter=acopy \
+    --enable-filter=acue \
+    --enable-filter=acrossfade \
+    --enable-filter=acrossover \
+    --enable-filter=acrusher \
+    --enable-filter=adeclick \
+    --enable-filter=adeclip \
+    --enable-filter=adelay \
+    --enable-filter=adenorm \
+    --enable-filter=aderivative \
+    --enable-filter=aecho \
+    --enable-filter=aemphasis \
+    --enable-filter=aeval \
+    --enable-filter=aexciter \
+    --enable-filter=afade \
+    --enable-filter=afftdn \
+    --enable-filter=afftfilt \
+    --enable-filter=aformat \
+    --enable-filter=afreqshift \
+    --enable-filter=agate \
+    --enable-filter=aiir \
+    --enable-filter=aintegral \
+    --enable-filter=alimiter \
+    --enable-filter=allpass \
+    --enable-filter=aloop \
+    --enable-filter=ametadata \
+    --enable-filter=amultiply \
+    --enable-filter=anequalizer \
+    --enable-filter=anlmdn \
+    --enable-filter=anlms \
+    --enable-filter=anull \
+    --enable-filter=apad \
+    --enable-filter=aperms \
+    --enable-filter=aphaser \
+    --enable-filter=aphaseshift \
+    --enable-filter=apulsator \
+    --enable-filter=arealtime \
+    --enable-filter=aresample \
+    --enable-filter=areverse \
+    --enable-filter=arnndn \
+    --enable-filter=aselect \
+    --enable-filter=asendcmd \
+    --enable-filter=asetnsamples \
+    --enable-filter=asetpts \
+    --enable-filter=asetrate \
+    --enable-filter=asettb \
+    --enable-filter=ashowinfo \
+    --enable-filter=asidedata \
+    --enable-filter=asoftclip \
+    --enable-filter=asplit \
+    --enable-filter=astats \
+    --enable-filter=asubboost \
+    --enable-filter=asubcut \
+    --enable-filter=asupercut \
+    --enable-filter=asuperpass \
+    --enable-filter=asuperstop \
+    --enable-filter=atempo \
+    --enable-filter=atrim \
+    --enable-filter=axcorrelate \
+    --enable-filter=bandpass \
+    --enable-filter=bandreject \
+    --enable-filter=bass \
+    --enable-filter=biquad \
+    --enable-filter=channelmap \
+    --enable-filter=channelsplit \
+    --enable-filter=chorus \
+    --enable-filter=compand \
+    --enable-filter=compensationdelay \
+    --enable-filter=crossfeed \
+    --enable-filter=crystalizer \
+    --enable-filter=dcshift \
+    --enable-filter=deesser \
+    --enable-filter=drmeter \
+    --enable-filter=dynaudnorm \
+    --enable-filter=earwax \
+    --enable-filter=ebur128 \
+    --enable-filter=equalizer \
+    --enable-filter=extrastereo \
+    --enable-filter=firequalizer \
+    --enable-filter=flanger \
+    --enable-filter=haas \
+    --enable-filter=hdcd \
+    --enable-filter=highpass \
+    --enable-filter=highshelf \
+    --enable-filter=loudnorm \
+    --enable-filter=lowpass \
+    --enable-filter=lowshelf \
+    --enable-filter=mcompand \
+    --enable-filter=pan \
+    --enable-filter=replaygain \
+    --enable-filter=resample \
+    --enable-filter=sidechaincompress \
+    --enable-filter=sidechaingate \
+    --enable-filter=silencedetect \
+    --enable-filter=silenceremove \
+    --enable-filter=speechnorm \
+    --enable-filter=stereotools \
+    --enable-filter=stereowiden \
+    --enable-filter=superequalizer \
+    --enable-filter=surround \
+    --enable-filter=treble \
+    --enable-filter=tremolo \
+    --enable-filter=vibrato \
+    --enable-filter=volume \
+    --enable-filter=volumedetect \
+    --enable-filter=anullsink \
+    --enable-filter=abitscope \
+    --enable-filter=adrawgraph \
+    --enable-filter=agraphmonitor \
+    --enable-filter=ahistogram \
+    --enable-filter=aphasemeter \
+    --enable-filter=avectorscope \
+    --enable-filter=showcqt \
+    --enable-filter=showfreqs \
+    --enable-filter=showspatial \
+    --enable-filter=showspectrum \
+    --enable-filter=showspectrumpic \
+    --enable-filter=showvolume \
+    --enable-filter=showwaves \
+    --enable-filter=showwavespic \
+    --enable-filter=afifo \
+    --enable-filter=abuffersink
 RUN make -j4 && make install
 
 

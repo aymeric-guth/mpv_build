@@ -19,3 +19,6 @@ install_name_tool -change libgme.1.dylib /opt/x86_64-apple-darwin18/lib/libgme.1
 install_name_tool -change libmodplug.dylib /opt/x86_64-apple-darwin18/lib/libmodplug.dylib /opt/x86_64-apple-darwin18/lib/libpostproc.56.dylib
 #install_name_tool -change libgme.1.dylib /opt/x86_64-apple-darwin18/lib/libgme.1.dylib /opt/x86_64-apple-darwin18/lib/libavdevice.59.dylib
 #install_name_tool -change libmodplug.dylib /opt/x86_64-apple-darwin18/lib/libmodplug.dylib /opt/x86_64-apple-darwin18/lib/libavdevice.59.dylib
+
+install_name_tool -change libgme.1.dylib /opt/x86_64-apple-darwin18/lib/libgme.1.dylib /opt/x86_64-apple-darwin18/bin/ffmpeg
+install_name_tool -change libmodplug.dylib /opt/x86_64-apple-darwin18/lib/libmodplug.dylib /opt/x86_64-apple-darwin18/bin/ffmpeg
