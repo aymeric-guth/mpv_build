@@ -1,0 +1,3 @@
+https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
+
+https://stackoverflow.com/questions/31823999/is-it-possible-to-have-clang-link-dylibs-relatively-and-not-use-install-name

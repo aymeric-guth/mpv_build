@@ -26,6 +26,9 @@ ENV OSXCROSS_TARGET="x86_64-apple-darwin18-mach"
 ENV OSXCROSS_SDK="/opt/osxcross/SDK/MacOSX10.14.sdk"
 ENV PREFIX="/opt/${OSXCROSS_HOST}"
 RUN printf '1\n' | osxcross-macports; exit 0;
+RUN echo "alias install_name_tool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool" >> ~/.bashrc
+RUN echo "alias otool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-otool" >> ~/.bashrc
+RUN echo "alias vtool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-vtool" >> ~/.bashrc
 
 
 FROM stagging AS stage-libgme
@@ -41,16 +44,18 @@ WORKDIR /game-music-emu/build
 FROM stage-libgme AS build-libgme
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
-  -DBUILD_FRAMEWORK="ON" \
+  -DBUILD_FRAMEWORK="OFF" \
   -DBUILD_SHARED_LIBS="ON" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DENABLE_UBSAN="0" \
   -DGME_SPC_ISOLATED_ECHO_BUFFER="ON"
-#RUN make -j4 && make install
+RUN make -j4 && make install
+RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libgme.0.7.0.dylib" "${PREFIX}/lib/libgme.0.7.0.dylib"
 
 
-#FROM build-libgme
-#CMD \
-#  cp -a "${PREFIX}/lib" "${PREFIX}_" && \
-#  cp -a "${PREFIX}/include" "${PREFIX}_/include" && \
-#  chown -R 1000:1000 "${PREFIX}_"
+FROM build-libgme
+CMD \
+ rm -rf "${PREFIX}_/*" && \
+ cp -a "${PREFIX}/lib" "${PREFIX}_" && \
+ cp -a "${PREFIX}/include" "${PREFIX}_/include" && \
+ chown -R 1000:1000 "${PREFIX}_"

@@ -12,6 +12,7 @@ RUN apt update && apt install -y \
   libtool \
   gcc \
   make \
+  bsdmainutils \
   && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install waftools
 
