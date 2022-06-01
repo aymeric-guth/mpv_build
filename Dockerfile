@@ -21,12 +21,15 @@ FROM builder AS stagging
 ENV MACOSX_DEPLOYMENT_TARGET="10.14"
 ENV OSXCROSS_MP_INC="1"
 ENV OSXCROSS_GCC_NO_STATIC_RUNTIME="1"
-ENV OSXCROSS_HOST="x86_64-apple-darwin18"
 ENV OSXCROSS_TARGET_DIR="/opt/osxcross"
 ENV OSXCROSS_TARGET="x86_64-apple-darwin18-mach"
 ENV OSXCROSS_SDK="/opt/osxcross/SDK/MacOSX10.14.sdk"
+ENV OSXCROSS_HOST="x86_64-apple-darwin18"
 ENV PREFIX="/opt/${OSXCROSS_HOST}"
 RUN printf '1\n' | osxcross-macports; exit 0;
+RUN echo "alias install_name_tool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool" >> ~/.bashrc
+RUN echo "alias otool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-otool" >> ~/.bashrc
+RUN echo "alias vtool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-vtool" >> ~/.bashrc
 
 
 FROM stagging AS stage-libgme
@@ -43,10 +46,12 @@ FROM stage-libgme AS build-libgme
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
+  -DBUILD_FRAMEWORK="OFF" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DENABLE_UBSAN="0" \
   -DGME_SPC_ISOLATED_ECHO_BUFFER="ON"
 RUN make -j4 && make install
+RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libgme.0.7.0.dylib" "${PREFIX}/lib/libgme.0.7.0.dylib"
 
 
 FROM stagging AS stage-libmodplug
@@ -60,6 +65,7 @@ RUN cmake .. \
   -DBUILD_SHARED_LIBS="ON" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}"
 RUN make -j4 && make install
+RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libmodplug.dylib" "${PREFIX}/lib/libmodplug.dylib"
 
 
 FROM stagging AS stage-libopus

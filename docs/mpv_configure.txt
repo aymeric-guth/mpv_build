@@ -1,4 +1,4 @@
-root@zoltron:/mpv# ./waf --help
+➜  mpv ./waf configure --help
 waf [commands] [options]
 
 Main commands (example: ./waf build -j4)
@@ -18,7 +18,7 @@ Options:
   --version             show program's version number and exit
   -c COLORS, --color=COLORS
                         whether to use colors (yes/no/auto) [default: auto]
-  -j JOBS, --jobs=JOBS  amount of parallel jobs (4)
+  -j JOBS, --jobs=JOBS  amount of parallel jobs (8)
   -k, --keep            continue despite errors (-kk to try harder)
   -v, --verbose         verbosity level -v -vv or -vvv [default: 0]
   --zones=ZONES         debugging zones (task_gen, deps, tasks, etc)
@@ -28,7 +28,7 @@ Options:
     -o OUT, --out=OUT   build dir for the project
     -t TOP, --top=TOP   src dir for the project
     --check-c-compiler=CHECK_C_COMPILER
-                        list of C compilers to try [gcc clang icc]
+                        list of C compilers to try [clang gcc]
 
   Build and installation options:
     -p, --progress      -p: progress bar; -pp: ide output
@@ -75,7 +75,7 @@ Options:
     By default, "waf install" will put the files in "/usr/local/bin", "/usr/local/lib" etc. An installation prefix
     other than "/usr/local" can be given using "--prefix", for example "--prefix=$HOME"
 
-    --prefix=PREFIX     installation prefix [default: '/opt/x86_64-apple-darwin18']
+    --prefix=PREFIX     installation prefix [default: '/usr/local/']
     --destdir=DESTDIR   installation root [default: '']
     --exec-prefix=EXEC_PREFIX
                         installation prefix for binaries [PREFIX]
