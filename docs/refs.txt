@@ -16,3 +16,12 @@ https://developer.apple.com/library/archive/technotes/tn2339/_index.html
 ### Build
 # search path for the compiler
 gcc -Wp,-v -E -
+
+char *__builtin_FUNCTION()
+
+./configure \
+    --disable-debug \
+    --disable-dependency-tracking \
+    --disable-silent-rules \
+    --without-vorbisfile
+

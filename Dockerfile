@@ -68,6 +68,15 @@ RUN make -j4 && make install
 RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libmodplug.dylib" "${PREFIX}/lib/libmodplug.dylib"
 
 
+FROM stagging AS stage-libopenmpt
+RUN mkdir /openmpt
+RUN mkdir ${PREFIX}
+
+
+FROM stage-libopenmpt AS build-libopenmpt
+COPY ./libopenmpt ${PREFIX}
+
+
 FROM stagging AS stage-libopus
 RUN git clone https://github.com/xiph/opus
 WORKDIR /opus
@@ -102,6 +111,7 @@ RUN git clone https://github.com/FFmpeg/FFmpeg
 ENV OSXCROSS_PKG_CONFIG_LIBDIR="/${PREFIX}/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/libexec/openssl3/lib/pkgconfig"
 COPY --from=build-libgme ${PREFIX} ${PREFIX}
 COPY --from=build-libmodplug ${PREFIX} ${PREFIX}
+COPY --from=build-libopenmpt ${PREFIX} ${PREFIX}
 COPY --from=build-libopus ${PREFIX} ${PREFIX}
 WORKDIR /FFmpeg
 
@@ -155,7 +165,8 @@ RUN \
     --disable-xlib \
     --disable-zlib \
     --enable-libgme \
-    --enable-libmodplug \
+    --enable-libopenmpt \
+    # --enable-libmodplug \
     --enable-libopus \
     ### Toolchain options
     --enable-cross-compile \
@@ -166,8 +177,7 @@ RUN \
     --cxx=o64-clang++ \
     --extra-cflags="-I${PREFIX}/include" \
     # --extra-cflags="-I${PREFIX}/include/libmodplug -I${PREFIX}/include/gme" \
-    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus" \
-    # --extra-ldflags="-L${PREFIX}/lib -static -l:libgme.a -l:libmodplug.a" \
+    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt" \
     ### Current
     --disable-decoders \
     --disable-demuxers \
@@ -181,7 +191,8 @@ RUN \
     --disable-encoders \
     ### Custom formats
     --enable-demuxer=libgme \
-    --enable-demuxer=libmodplug \
+    # --enable-demuxer=libmodplug \
+    --enable-demuxer=libopenmpt \
     --enable-decoder=mp3 \
     --enable-decoder=mp3_at \
     --enable-decoder=mp3adu \
@@ -199,6 +210,8 @@ RUN \
     --enable-decoder=pcm_s16le \
     --enable-demuxer=pcm_s16be \
     --enable-demuxer=pcm_s16le \
+    --enable-decoder=pcm_f32le \
+    --enable-demuxer=pcm_f32le \
     --enable-demuxer=wav \
     --enable-decoder=aac \
     --enable-decoder=aac_at \
