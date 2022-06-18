@@ -1,4 +1,5 @@
-`configure' configures libopenmpt 0.7.0-pre.8+r17384.autotools to adapt to many kinds of systems.
+➜  libopenmpt-0.6.3+release.autotools ./configure --help
+`configure' configures libopenmpt 0.6.3+release.autotools to adapt to many kinds of systems.
 
 Usage: ./configure [OPTION]... [VAR=VALUE]...
 
@@ -179,3 +180,6 @@ Some influential environment variables:
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
+
+Report bugs to <https://bugs.openmpt.org/>.
+libopenmpt home page: <https://lib.openmpt.org/>.
