@@ -1,0 +1,3 @@
+---
+tags: [gme, libgme, configure]
+---

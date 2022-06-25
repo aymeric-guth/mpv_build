@@ -1,5 +1,8 @@
-➜  libopenmpt-0.6.3+release.autotools ./configure --help
-`configure' configures libopenmpt 0.6.3+release.autotools to adapt to many kinds of systems.
+---
+tags: [opus, libopus, configure]
+---
+```
+`configure' configures opus 1.3.1-107-gccaaffa9 to adapt to many kinds of systems.
 
 Usage: ./configure [OPTION]... [VAR=VALUE]...
 
@@ -48,7 +51,7 @@ Fine tuning of the installation directories:
   --infodir=DIR           info documentation [DATAROOTDIR/info]
   --localedir=DIR         locale-dependent data [DATAROOTDIR/locale]
   --mandir=DIR            man documentation [DATAROOTDIR/man]
-  --docdir=DIR            documentation root [DATAROOTDIR/doc/libopenmpt]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/opus]
   --htmldir=DIR           html documentation [DOCDIR]
   --dvidir=DIR            dvi documentation [DOCDIR]
   --pdfdir=DIR            pdf documentation [DOCDIR]
@@ -69,30 +72,42 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
-  --enable-dependency-tracking
-                          do not reject slow dependency extractors
-  --disable-dependency-tracking
-                          speeds up one-time build
+  --disable-maintainer-mode
+                          disable make rules and dependencies not useful (and
+                          sometimes confusing) to the casual installer
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
+  --enable-dependency-tracking
+                          do not reject slow dependency extractors
+  --disable-dependency-tracking
+                          speeds up one-time build
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --disable-largefile     omit support for large files
-  --disable-openmpt123    Disable the openmpt123 command line player.
-  --disable-examples      Disable the example programs.
-  --disable-tests         Disable the test suite.
-  --disable-doxygen-doc   don't generate any doxygen documentation
-  --enable-doxygen-dot    generate graphics for doxygen documentation
-  --enable-doxygen-man    generate doxygen manual pages
-  --enable-doxygen-rtf    generate doxygen RTF documentation
-  --enable-doxygen-xml    generate doxygen XML documentation
-  --enable-doxygen-chm    generate doxygen compressed HTML help documentation
-  --enable-doxygen-chi    generate doxygen separate compressed HTML help index
-                          file
-  --disable-doxygen-html  don't generate doxygen plain HTML documentation
-  --enable-doxygen-ps     generate doxygen PostScript documentation
-  --enable-doxygen-pdf    generate doxygen PDF documentation
+  --enable-fixed-point    compile without floating point (for machines without
+                          a fast enough FPU)
+  --enable-fixed-point-debug
+                          debug fixed-point implementation
+  --disable-float-api     compile without the floating point API (for machines
+                          with no float library)
+  --enable-custom-modes   enable non-Opus modes, e.g. 44.1 kHz & 2^n frames
+  --enable-float-approx   enable fast approximations for floating point
+  --disable-asm           Disable assembly optimizations
+  --disable-rtcd          Disable run-time CPU capabilities detection
+  --disable-intrinsics    Disable intrinsics optimizations
+  --enable-assertions     enable additional software error checking
+  --disable-hardening     disable run-time checks that are cheap and safe for
+                          use in production
+  --enable-fuzzing        causes the encoder to make random decisions (do not
+                          use in production)
+  --enable-check-asm      enable bit-exactness checks between optimized and c
+                          implementations
+  --disable-doc           Do not build API documentation
+  --disable-extra-programs
+                          Do not build extra programs (demo and tests)
+  --disable-rfc8251       Disable bitstream fixes from RFC 8251
+  --disable-stack-protector
+                          Disable compiler stack hardening
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -105,18 +120,13 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
-  --without-zlib          Disable use of zlib.
-  --without-mpg123        Disable use of libmpg123.
-  --without-ogg           Disable use of libogg.
-  --without-vorbis        Disable use of libvorbis.
-  --without-vorbisfile    Disable use of libvorbisfile.
-  --with-pulseaudio       Enable use of libpulse and libpulse-simple (enabled
-                          by default on Linux).
-  --without-portaudio     Disable use of libportaudio.
-  --without-portaudiocpp  Disable use of libportaudiocpp.
-  --with-sdl2             Enable use of libsdl2.
-  --without-sndfile       Disable use of libsndfile.
-  --without-flac          Disable use of libflac.
+  --with-NE10=PFX         Prefix where libNE10 is installed (optional)
+  --with-NE10-libraries=DIR
+                          Directory where libNE10 library is installed
+                          (optional)
+  --with-NE10-includes=DIR
+                          Directory where libNE10 header files are installed
+                          (optional)
 
 Some influential environment variables:
   CC          C compiler command
@@ -129,57 +139,21 @@ Some influential environment variables:
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
   CPP         C preprocessor
-  PKG_CONFIG  path to pkg-config utility
-  PKG_CONFIG_PATH
-              directories to add to pkg-config's search path
-  PKG_CONFIG_LIBDIR
-              path overriding pkg-config's built-in search path
-  CXX         C++ compiler command
-  CXXFLAGS    C++ compiler flags
-  CXXCPP      C++ preprocessor
-  CXXSTDLIB_PCLIBSPRIVATE
-              C++ standard library (or libraries) required for static linking.
-              This will be put in the pkg-config file libopenmpt.pc
-              Libs.private field and used for nothing else.
-  ZLIB_CFLAGS C compiler flags for ZLIB, overriding pkg-config
-  ZLIB_LIBS   linker flags for ZLIB, overriding pkg-config
-  MPG123_CFLAGS
-              C compiler flags for MPG123, overriding pkg-config
-  MPG123_LIBS linker flags for MPG123, overriding pkg-config
-  OGG_CFLAGS  C compiler flags for OGG, overriding pkg-config
-  OGG_LIBS    linker flags for OGG, overriding pkg-config
-  VORBIS_CFLAGS
-              C compiler flags for VORBIS, overriding pkg-config
-  VORBIS_LIBS linker flags for VORBIS, overriding pkg-config
-  VORBISFILE_CFLAGS
-              C compiler flags for VORBISFILE, overriding pkg-config
-  VORBISFILE_LIBS
-              linker flags for VORBISFILE, overriding pkg-config
-  PULSEAUDIO_CFLAGS
-              C compiler flags for PULSEAUDIO, overriding pkg-config
-  PULSEAUDIO_LIBS
-              linker flags for PULSEAUDIO, overriding pkg-config
-  PORTAUDIO_CFLAGS
-              C compiler flags for PORTAUDIO, overriding pkg-config
-  PORTAUDIO_LIBS
-              linker flags for PORTAUDIO, overriding pkg-config
-  PORTAUDIOCPP_CFLAGS
-              C compiler flags for PORTAUDIOCPP, overriding pkg-config
-  PORTAUDIOCPP_LIBS
-              linker flags for PORTAUDIOCPP, overriding pkg-config
-  SDL2_CFLAGS C compiler flags for SDL2, overriding pkg-config
-  SDL2_LIBS   linker flags for SDL2, overriding pkg-config
-  SNDFILE_CFLAGS
-              C compiler flags for SNDFILE, overriding pkg-config
-  SNDFILE_LIBS
-              linker flags for SNDFILE, overriding pkg-config
-  FLAC_CFLAGS C compiler flags for FLAC, overriding pkg-config
-  FLAC_LIBS   linker flags for FLAC, overriding pkg-config
-  DOXYGEN_PAPER_SIZE
-              a4wide (default), a4, letter, legal or executive
+  CCAS        assembler compiler command (defaults to CC)
+  CCASFLAGS   assembler compiler flags (defaults to CFLAGS)
+  X86_SSE_CFLAGS
+              C compiler flags to compile SSE intrinsics [default=-msse]
+  X86_SSE2_CFLAGS
+              C compiler flags to compile SSE2 intrinsics [default=-msse2]
+  X86_SSE4_1_CFLAGS
+              C compiler flags to compile SSE4.1 intrinsics [default=-msse4.1]
+  X86_AVX_CFLAGS
+              C compiler flags to compile AVX intrinsics [default=-mavx]
+  ARM_NEON_INTR_CFLAGS
+              C compiler flags to compile ARM NEON intrinsics
+              [default=-mfpu=neon / -mfpu=neon -mfloat-abi=softfp]
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
-Report bugs to <https://bugs.openmpt.org/>.
-libopenmpt home page: <https://lib.openmpt.org/>.
+Report bugs to <opus@xiph.org>.```

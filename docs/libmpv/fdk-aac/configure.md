@@ -1,4 +1,5 @@
-`configure' configures opus 1.3.1-107-gccaaffa9 to adapt to many kinds of systems.
+```
+`configure' configures fdk-aac 2.0.2 to adapt to many kinds of systems.
 
 Usage: ./configure [OPTION]... [VAR=VALUE]...
 
@@ -47,7 +48,7 @@ Fine tuning of the installation directories:
   --infodir=DIR           info documentation [DATAROOTDIR/info]
   --localedir=DIR         locale-dependent data [DATAROOTDIR/locale]
   --mandir=DIR            man documentation [DATAROOTDIR/man]
-  --docdir=DIR            documentation root [DATAROOTDIR/doc/opus]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/fdk-aac]
   --htmldir=DIR           html documentation [DOCDIR]
   --dvidir=DIR            dvi documentation [DOCDIR]
   --pdfdir=DIR            pdf documentation [DOCDIR]
@@ -68,42 +69,16 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
-  --disable-maintainer-mode
-                          disable make rules and dependencies not useful (and
-                          sometimes confusing) to the casual installer
-  --enable-shared[=PKGS]  build shared libraries [default=yes]
-  --enable-static[=PKGS]  build static libraries [default=yes]
-  --enable-fast-install[=PKGS]
-                          optimize for fast installation [default=yes]
+  --enable-example        enable example encoding program (default is no)
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+  --enable-shared[=PKGS]  build shared libraries [default=yes]
+  --enable-static[=PKGS]  build static libraries [default=yes]
+  --enable-fast-install[=PKGS]
+                          optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-fixed-point    compile without floating point (for machines without
-                          a fast enough FPU)
-  --enable-fixed-point-debug
-                          debug fixed-point implementation
-  --disable-float-api     compile without the floating point API (for machines
-                          with no float library)
-  --enable-custom-modes   enable non-Opus modes, e.g. 44.1 kHz & 2^n frames
-  --enable-float-approx   enable fast approximations for floating point
-  --disable-asm           Disable assembly optimizations
-  --disable-rtcd          Disable run-time CPU capabilities detection
-  --disable-intrinsics    Disable intrinsics optimizations
-  --enable-assertions     enable additional software error checking
-  --disable-hardening     disable run-time checks that are cheap and safe for
-                          use in production
-  --enable-fuzzing        causes the encoder to make random decisions (do not
-                          use in production)
-  --enable-check-asm      enable bit-exactness checks between optimized and c
-                          implementations
-  --disable-doc           Do not build API documentation
-  --disable-extra-programs
-                          Do not build extra programs (demo and tests)
-  --disable-rfc8251       Disable bitstream fixes from RFC 8251
-  --disable-stack-protector
-                          Disable compiler stack hardening
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -116,13 +91,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
-  --with-NE10=PFX         Prefix where libNE10 is installed (optional)
-  --with-NE10-libraries=DIR
-                          Directory where libNE10 library is installed
-                          (optional)
-  --with-NE10-includes=DIR
-                          Directory where libNE10 header files are installed
-                          (optional)
 
 Some influential environment variables:
   CC          C compiler command
@@ -132,24 +100,14 @@ Some influential environment variables:
   LIBS        libraries to pass to the linker, e.g. -l<library>
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
+  CXX         C++ compiler command
+  CXXFLAGS    C++ compiler flags
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
-  CPP         C preprocessor
-  CCAS        assembler compiler command (defaults to CC)
-  CCASFLAGS   assembler compiler flags (defaults to CFLAGS)
-  X86_SSE_CFLAGS
-              C compiler flags to compile SSE intrinsics [default=-msse]
-  X86_SSE2_CFLAGS
-              C compiler flags to compile SSE2 intrinsics [default=-msse2]
-  X86_SSE4_1_CFLAGS
-              C compiler flags to compile SSE4.1 intrinsics [default=-msse4.1]
-  X86_AVX_CFLAGS
-              C compiler flags to compile AVX intrinsics [default=-mavx]
-  ARM_NEON_INTR_CFLAGS
-              C compiler flags to compile ARM NEON intrinsics
-              [default=-mfpu=neon / -mfpu=neon -mfloat-abi=softfp]
+  CXXCPP      C++ preprocessor
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
-Report bugs to <opus@xiph.org>.
+Report bugs to <http://sourceforge.net/projects/opencore-amr/>.
+```

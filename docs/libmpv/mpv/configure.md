@@ -1,4 +1,7 @@
-➜  mpv ./waf configure --help
+---
+tags: [mpv, libmpv, configure]
+---
+```
 waf [commands] [options]
 
 Main commands (example: ./waf build -j4)
@@ -244,3 +247,4 @@ Options:
                         disable macOS Media Player support [autodetect]
     --disable-macos-cocoa-cb
                         disable macOS libmpv backend [autodetect]
+```

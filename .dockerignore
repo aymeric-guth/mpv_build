@@ -4,7 +4,8 @@ MacOSX10.14.sdk
 gme
 lazyusf
 #libopenmpt
-llvm-clang
 modplug
 openmpt
 opus
+ffmpeg
+.git

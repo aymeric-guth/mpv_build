@@ -32,8 +32,8 @@ RUN echo "alias otool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-otool" >> ~/.b
 RUN echo "alias vtool=${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-vtool" >> ~/.bashrc
 
 
-FROM stagging AS stage-libgme
-RUN git clone https://bitbucket.org/mpyne/game-music-emu
+FROM stagging AS gme-stagging
+RUN git clone --depth 1 https://bitbucket.org/mpyne/game-music-emu
 RUN osxcross-macports install \
   libsdl2_mixer \
   zlib \
@@ -42,7 +42,7 @@ RUN osxcross-macports install \
 WORKDIR /game-music-emu/build
 
 
-FROM stage-libgme AS build-libgme
+FROM gme-stagging AS gme-configure
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
@@ -50,125 +50,219 @@ RUN cmake .. \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DENABLE_UBSAN="0" \
   -DGME_SPC_ISOLATED_ECHO_BUFFER="ON"
-RUN make -j4 && make install
+
+
+FROM gme-configure AS gme-build
+RUN make -j8 && make install
 RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libgme.0.7.0.dylib" "${PREFIX}/lib/libgme.0.7.0.dylib"
 
 
-FROM stagging AS stage-libmodplug
-RUN git clone https://github.com/Konstanty/libmodplug
+FROM stagging AS modplug-stagging
+RUN git clone --depth 1 https://github.com/Konstanty/libmodplug
 WORKDIR /libmodplug/build
 
 
-FROM stage-libmodplug AS build-libmodplug
+FROM modplug-stagging AS modplug-configure
 RUN cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="${OSXCROSS_TARGET_DIR}/toolchain.cmake" \
   -DBUILD_SHARED_LIBS="ON" \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}"
-RUN make -j4 && make install
+
+
+FROM modplug-configure AS modplug-build
+RUN make -j8 && make install
 RUN ${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-install_name_tool -id "${PREFIX}/lib/libmodplug.dylib" "${PREFIX}/lib/libmodplug.dylib"
 
 
-FROM stagging AS stage-libopenmpt
+FROM stagging AS openmpt-stagging
 RUN mkdir /openmpt
 RUN mkdir ${PREFIX}
 
 
-FROM stage-libopenmpt AS build-libopenmpt
+FROM openmpt-stagging AS openmpt-build
 COPY ./libopenmpt ${PREFIX}
 
 
-FROM stagging AS stage-libopus
-RUN git clone https://github.com/xiph/opus
+FROM stagging AS ogg-stagging
+RUN git clone --depth 1 https://github.com/xiph/ogg
+WORKDIR /ogg
+RUN ./autogen.sh
+
+
+FROM ogg-stagging AS ogg-configure
+RUN \
+  PATH=/opt/osxcross/bin:$PATH \
+  CC=o64-clang \
+  ./configure \
+    --prefix=$PREFIX \
+    --host=$OSXCROSS_HOST \
+    --enable-shared \
+    --disable-static
+
+
+FROM ogg-configure AS ogg-build
+RUN make -j8 && make install
+
+
+FROM stagging AS vorbis-stagging
+RUN git clone --depth 1 https://github.com/xiph/vorbis
+COPY --from=ogg-build $PREFIX $PREFIX
+WORKDIR /vorbis
+RUN ./autogen.sh
+
+
+FROM vorbis-stagging AS vorbis-configure
+RUN \
+  PATH=/opt/osxcross/bin:$PATH \
+  CC=o64-clang \
+  CFLAGS="-I$PREFIX/include" \
+  LDFLAGS="-L$PREFIX/lib" \
+  ./configure \
+    --prefix=$PREFIX \
+    --host=$OSXCROSS_HOST \
+    --enable-shared \
+    --disable-static \
+    --disable-docs \
+    --disable-examples \
+    --disable-oggtest
+
+
+FROM vorbis-configure AS vorbis-build
+RUN make -j8 && make install
+
+
+FROM stagging AS opus-stagging
+RUN git clone --depth 1 https://github.com/xiph/opus
+COPY --from=ogg-build $PREFIX $PREFIX
 WORKDIR /opus
 RUN ./autogen.sh
 
 
-FROM stage-libopus AS build-libopus
+FROM opus-stagging AS opus-configure
 RUN \
   PATH=/opt/osxcross/bin:$PATH \
   CC="o64-clang" \
   CXX="o64-clang++" \
-#   CFLAGS="-I${PREFIX}/include -I${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/include" \
-#   LDFLAGS="-L${PREFIX}/lib" \
+  CFLAGS="-I$PREFIX/include" \
+  LDFLAGS="-L$PREFIX/lib" \
   ./configure \
     --enable-shared=yes \
     --enable-static=no \
-    --prefix=${PREFIX} \
-    # --exec-prefix=${PREFIX} \
-    # --program-prefix=
-    --host=${OSXCROSS_HOST}
-RUN make -j4 && make install
+    --prefix=$PREFIX \
+    --host=$OSXCROSS_HOST \
+    --disable-doc \
+    --disable-extra-programs
 
 
-FROM stagging AS stage-ffmpeg
+FROM opus-configure AS opus-build
+RUN make -j8 && make install
+
+
+FROM stagging AS fdk-aac-stagging
+RUN git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+WORKDIR /fdk-aac
+RUN ./autogen.sh
+
+
+FROM fdk-aac-stagging AS fdk-aac-configure
+RUN \
+  CC=o64-clang \
+  CXX=o64-clang++ \
+  ./configure \
+    --prefix=$PREFIX \
+    --host=$OSXCROSS_HOST \
+    --enable-shared \
+    --disable-static
+
+
+FROM fdk-aac-configure AS fdk-aac-build
+RUN make -j8 && make install
+
+
+FROM stagging AS ffmpeg-stagging
 RUN osxcross-macports install \
   ffmpeg-devel \
   libass \
   libbluray \
   openssl11; \
   exit 0;
-RUN git clone https://github.com/FFmpeg/FFmpeg
+#RUN git clone https://github.com/FFmpeg/FFmpeg
+RUN git clone --depth 1 https://github.com/FFmpeg/FFmpeg
 ENV OSXCROSS_PKG_CONFIG_LIBDIR="/${PREFIX}/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/libexec/openssl3/lib/pkgconfig"
-COPY --from=build-libgme ${PREFIX} ${PREFIX}
-COPY --from=build-libmodplug ${PREFIX} ${PREFIX}
-COPY --from=build-libopenmpt ${PREFIX} ${PREFIX}
-COPY --from=build-libopus ${PREFIX} ${PREFIX}
+COPY --from=gme-build $PREFIX $PREFIX
+COPY --from=modplug-build $PREFIX $PREFIX
+COPY --from=openmpt-build $PREFIX $PREFIX
+COPY --from=vorbis-build $PREFIX $PREFIX
+COPY --from=opus-build $PREFIX $PREFIX
+COPY --from=fdk-aac-build $PREFIX $PREFIX
 WORKDIR /FFmpeg
+#RUN git checkout 6c3a82f0433de8ff9c35def971a736056cc8ff38
+COPY libavfilter.Makefile libavfilter/Makefile
 
 
-FROM stage-ffmpeg AS build-ffmpeg
+FROM ffmpeg-stagging AS ffmpeg-configure
 RUN \
   ./configure \
-    ### Standard options
+    #####################
+    ### Standard options:
+    #####################
     --prefix=${PREFIX} \
-    ### Licensing options
+    ######################
+    ### Licensing options:
+    ######################
     --enable-gpl \
     --enable-version3 \
     --enable-nonfree \
-    ### Configuration options
+    ##########################
+    ### Configuration options:
+    ##########################
     --disable-static \
     --enable-shared \
     --disable-gray \
     --disable-swscale-alpha \
-    ### Program options
-    --enable-ffmpeg \
+    ####################
+    ### Program options:
+    ####################
+    --disable-ffmpeg \
     --disable-ffplay \
     --disable-ffprobe \
-    ### Documentation options
+    ##########################
+    ### Documentation options:
+    ##########################
     --disable-doc \
     --disable-htmlpages \
     --disable-manpages \
     --disable-podpages \
     --disable-txtpages \
-    ### Component options
+    ######################
+    ### Component options:
+    ######################
     --disable-avdevice \
+    # --disable-swscale \
+    --disable-postproc \
+    # --disable-swresample \
     --disable-w32threads \
-    # --disable-network \
+    --disable-os2threads \
+    --disable-network \
+    # Discrete Cosine Transform
+    # --disable-dct \
+    # Discrete Wavelet Transform
+    # --disable-dwt \
+    # --disable-error-resilience \ disable error resilience code
+    # disable LSP code ???
+    # --disable-lsp \
+    # disable MDCT code ???
+    # --disable-mdct \
+    # Real Discrete Fourier Transforms
+    # --disable-rdft \
+    # Fast Fourier Transforms
+    # --disable-fft \
+    # floating point AAN (I)DCT
+    # --disable-faan \
     --disable-pixelutils \
-    ### Protocols
-    # --disable-protocols \
-    --enable-protocol=tcp \
-    ### Individual component options
-    ### External library support
-    --disable-alsa \
-    --disable-avfoundation \
-    --disable-bzlib \
-    --disable-iconv \
-    --disable-libass \
-    --disable-lzma \
-    --disable-mediafoundation \
-    --disable-sndio \
-    --disable-schannel \
-    --disable-sdl2 \
-    --disable-securetransport \
-    --disable-vulkan \
-    --disable-xlib \
-    --disable-zlib \
-    --enable-libgme \
-    --enable-libopenmpt \
-    # --enable-libmodplug \
-    --enable-libopus \
-    ### Toolchain options
+    ######################
+    ### Toolchain options:
+    ######################
     --enable-cross-compile \
     --arch=x86_64 \
     --target-os=darwin \
@@ -176,198 +270,204 @@ RUN \
     --cc=o64-clang \
     --cxx=o64-clang++ \
     --extra-cflags="-I${PREFIX}/include" \
-    # --extra-cflags="-I${PREFIX}/include/libmodplug -I${PREFIX}/include/gme" \
-    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt" \
-    ### Current
+    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lvorbis -logg -lfdk-aac" \
+    #################################
+    ### Individual component options:
+    #################################
+    --disable-encoders \
     --disable-decoders \
-    --disable-demuxers \
-    --disable-parsers \
-    --disable-filters \
-    --disable-bsfs \
-    --disable-indevs \
-    --disable-outdevs \
     --disable-hwaccels \
     --disable-muxers \
-    --disable-encoders \
-    ### Custom formats
+    --disable-demuxers \
+    --disable-parsers \
+    --disable-bsfs \
+    --disable-protocols \
+    --disable-devices \
+    --disable-filters \
+    #############################
+    ### External library support:
+    #############################
+    --disable-alsa \
+    --disable-appkit \
+    --disable-avfoundation \
+    --disable-avisynth \
+    --disable-bzlib \
+    --disable-coreimage \
+    --disable-chromaprint \
+    --disable-frei0r \
+    --disable-gcrypt \
+    --disable-gmp \
+    --disable-gnutls \
+    --disable-iconv \
+    --disable-jni \
+    --disable-ladspa \
+    --disable-lcms2 \
+    --disable-libaom \
+    --disable-libaribb24 \
+    --disable-libass \
+    --disable-libbluray \
+    --disable-libbs2b \
+    --disable-libcaca \
+    --disable-libcelt \
+    --disable-libcdio \
+    --disable-libcodec2 \
+    --disable-libdav1d \
+    --disable-libdavs2 \
+    --disable-libdc1394 \
+    --disable-libfdk-aac \
+    --disable-libflite \
+    --disable-libfontconfig \
+    --disable-libfreetype \
+    --disable-libfribidi \
+    --disable-libglslang \
+    --disable-libgme \
+    --disable-libgsm \
+    --disable-libiec61883 \
+    --disable-libilbc \
+    --disable-libjack \
+    --disable-libjxl \
+    --disable-libklvanc \
+    --disable-libkvazaar \
+    --disable-liblensfun \
+    --disable-libmodplug \
+    --disable-libmp3lame \
+    --disable-libopencore-amrnb \
+    --disable-libopencore-amrwb \
+    --disable-libopencv \
+    --disable-libopenh264 \
+    --disable-libopenjpeg \
+    --disable-libopenmpt \
+    --disable-libopenvino \
+    --disable-libopus \
+    --disable-libplacebo \
+    --disable-libpulse \
+    --disable-librabbitmq \
+    --disable-librav1e \
+    --disable-librist \
+    --disable-librsvg \
+    --disable-librubberband \
+    --disable-librtmp \
+    --disable-libshaderc \
+    --disable-libshine \
+    --disable-libsmbclient \
+    --disable-libsnappy \
+    --disable-libsoxr \
+    --disable-libspeex \
+    --disable-libsrt \
+    --disable-libssh \
+    --disable-libsvtav1 \
+    --disable-libtensorflow \
+    --disable-libtesseract \
+    --disable-libtheora \
+    --disable-libtls \
+    --disable-libtwolame \
+    --disable-libuavs3d \
+    --disable-libv4l2 \
+    --disable-libvidstab \
+    --disable-libvmaf \
+    --disable-libvo-amrwbenc \
+    --disable-libvorbis \
+    --disable-libvpx \
+    --disable-libwebp \
+    --disable-libx264 \
+    --disable-libx265 \
+    --disable-libxavs \
+    --disable-libxavs2 \
+    --disable-libxcb \
+    --disable-libxcb-shm \
+    --disable-libxcb-xfixes \
+    --disable-libxcb-shape \
+    --disable-libxvid \
+    --disable-libxml2 \
+    --disable-libzimg \
+    --disable-libzmq \
+    --disable-libzvbi \
+    --disable-lv2 \
+    --disable-lzma \
+    --disable-decklink \
+    --disable-mbedtls \
+    --disable-mediacodec \
+    --disable-mediafoundation \
+    --disable-metal \
+    --disable-libmysofa \
+    --disable-openal \
+    --disable-opencl \
+    --disable-opengl \
+    --disable-openssl \
+    --disable-pocketsphinx \
+    --disable-sndio \
+    --disable-schannel \
+    --disable-sdl2 \
+    --disable-securetransport \
+    --disable-vapoursynth \
+    --disable-vulkan \
+    --disable-xlib \
+    --disable-zlib \
+    #############################
+    ### Hardware acceleration:
+    #############################
+    --disable-amf \
+    --disable-audiotoolbox \
+    --disable-cuda-nvcc \
+    --disable-cuda-llvm \
+    --disable-cuvid \
+    --disable-d3d11va \
+    --disable-dxva2 \
+    --disable-ffnvcodec \
+    --disable-libdrm \
+    --disable-libmfx \
+    --disable-libnpp \
+    --disable-mmal \
+    --disable-nvdec \
+    --disable-nvenc \
+    --disable-omx \
+    --disable-omx-rpi \
+    --disable-rkmpp \
+    --disable-v4l2-m2m \
+    --disable-vaapi \
+    --disable-vdpau \
+    --disable-videotoolbox \
+    #######################
+    ### External Libraries:
+    #######################
+    --enable-libgme \
+    # --enable-libmodplug \
+    --enable-libopenmpt \
+    --enable-libvorbis \
+    --enable-libopus \
+    --enable-libfdk-aac \
+    ###############
+    ### (de)muxers:
+    ###############
     --enable-demuxer=libgme \
     # --enable-demuxer=libmodplug \
     --enable-demuxer=libopenmpt \
-    --enable-decoder=mp3 \
-    --enable-decoder=mp3_at \
-    --enable-decoder=mp3adu \
-    --enable-decoder=mp3adufloat \
-    --enable-decoder=mp3float \
-    --enable-decoder=mp3on4 \
-    --enable-decoder=mp3on4float \
     --enable-demuxer=mp3 \
-    --enable-decoder=flac \
     --enable-demuxer=flac \
-    --enable-decoder=vorbis \
     --enable-demuxer=ogg \
-    --enable-muxer=ogg \
-    --enable-decoder=pcm_s16be \
-    --enable-decoder=pcm_s16le \
-    --enable-demuxer=pcm_s16be \
-    --enable-demuxer=pcm_s16le \
-    --enable-decoder=pcm_f32le \
-    --enable-demuxer=pcm_f32le \
     --enable-demuxer=wav \
-    --enable-decoder=aac \
-    --enable-decoder=aac_at \
-    --enable-decoder=aac_fixed \
-    --enable-demuxer=aac \
-    # --enable-decoder=aac_latm \
-    # --enable-decoder=aasc \
-    # --enable-decoder=ac3 \
-    # --enable-decoder=ac3_at \
-    # --enable-decoder=ac3_fixed \
-    # --enable-demuxer=ac3 \
-    # --enable-demuxer=aa \
-    --enable-decoder=alac \
-    --enable-decoder=alac_at \
-    --enable-demuxer=aax \
     --enable-demuxer=aiff \
-    # --enable-decoder=mpeg4 \
-    --enable-demuxer=mov \
-    --enable-decoder=ape \
     --enable-demuxer=ape \
-    --enable-decoder=opus \
-    --enable-encoder=opus \
+    --enable-demuxer=mov \
+    ###########
+    ### Codecs:
+    ###########
+    --enable-decoder=pcm_s16le \
+    --enable-decoder=pcm_f32le \
+    --enable-decoder=mp3 \
+    --enable-decoder=flac \
     --enable-decoder=libopus \
-    --enable-encoder=libopus \
-    ####################################
-    ### Filters
-    ####################################
-    --enable-filter=abench \
-    --enable-filter=acompressor \
-    --enable-filter=acontrast \
-    --enable-filter=acopy \
-    --enable-filter=acue \
-    --enable-filter=acrossfade \
-    --enable-filter=acrossover \
-    --enable-filter=acrusher \
-    --enable-filter=adeclick \
-    --enable-filter=adeclip \
-    --enable-filter=adelay \
-    --enable-filter=adenorm \
-    --enable-filter=aderivative \
-    --enable-filter=aecho \
-    --enable-filter=aemphasis \
-    --enable-filter=aeval \
-    --enable-filter=aexciter \
-    --enable-filter=afade \
-    --enable-filter=afftdn \
-    --enable-filter=afftfilt \
-    --enable-filter=aformat \
-    --enable-filter=afreqshift \
-    --enable-filter=agate \
-    --enable-filter=aiir \
-    --enable-filter=aintegral \
-    --enable-filter=alimiter \
-    --enable-filter=allpass \
-    --enable-filter=aloop \
-    --enable-filter=ametadata \
-    --enable-filter=amultiply \
-    --enable-filter=anequalizer \
-    --enable-filter=anlmdn \
-    --enable-filter=anlms \
-    --enable-filter=anull \
-    --enable-filter=apad \
-    --enable-filter=aperms \
-    --enable-filter=aphaser \
-    --enable-filter=aphaseshift \
-    --enable-filter=apulsator \
-    --enable-filter=arealtime \
-    --enable-filter=aresample \
-    --enable-filter=areverse \
-    --enable-filter=arnndn \
-    --enable-filter=aselect \
-    --enable-filter=asendcmd \
-    --enable-filter=asetnsamples \
-    --enable-filter=asetpts \
-    --enable-filter=asetrate \
-    --enable-filter=asettb \
-    --enable-filter=ashowinfo \
-    --enable-filter=asidedata \
-    --enable-filter=asoftclip \
-    --enable-filter=asplit \
-    --enable-filter=astats \
-    --enable-filter=asubboost \
-    --enable-filter=asubcut \
-    --enable-filter=asupercut \
-    --enable-filter=asuperpass \
-    --enable-filter=asuperstop \
-    --enable-filter=atempo \
-    --enable-filter=atrim \
-    --enable-filter=axcorrelate \
-    --enable-filter=bandpass \
-    --enable-filter=bandreject \
-    --enable-filter=bass \
-    --enable-filter=biquad \
-    --enable-filter=channelmap \
-    --enable-filter=channelsplit \
-    --enable-filter=chorus \
-    --enable-filter=compand \
-    --enable-filter=compensationdelay \
-    --enable-filter=crossfeed \
-    --enable-filter=crystalizer \
-    --enable-filter=dcshift \
-    --enable-filter=deesser \
-    --enable-filter=drmeter \
-    --enable-filter=dynaudnorm \
-    --enable-filter=earwax \
-    --enable-filter=ebur128 \
-    --enable-filter=equalizer \
-    --enable-filter=extrastereo \
-    --enable-filter=firequalizer \
-    --enable-filter=flanger \
-    --enable-filter=haas \
-    --enable-filter=hdcd \
-    --enable-filter=highpass \
-    --enable-filter=highshelf \
-    --enable-filter=loudnorm \
-    --enable-filter=lowpass \
-    --enable-filter=lowshelf \
-    --enable-filter=mcompand \
-    --enable-filter=pan \
-    --enable-filter=replaygain \
-    --enable-filter=resample \
-    --enable-filter=sidechaincompress \
-    --enable-filter=sidechaingate \
-    --enable-filter=silencedetect \
-    --enable-filter=silenceremove \
-    --enable-filter=speechnorm \
-    --enable-filter=stereotools \
-    --enable-filter=stereowiden \
-    --enable-filter=superequalizer \
-    --enable-filter=surround \
-    --enable-filter=treble \
-    --enable-filter=tremolo \
-    --enable-filter=vibrato \
-    --enable-filter=volume \
-    --enable-filter=volumedetect \
-    --enable-filter=anullsink \
-    --enable-filter=abitscope \
-    --enable-filter=adrawgraph \
-    --enable-filter=agraphmonitor \
-    --enable-filter=ahistogram \
-    --enable-filter=aphasemeter \
-    --enable-filter=avectorscope \
-    --enable-filter=showcqt \
-    --enable-filter=showfreqs \
-    --enable-filter=showspatial \
-    --enable-filter=showspectrum \
-    --enable-filter=showspectrumpic \
-    --enable-filter=showvolume \
-    --enable-filter=showwaves \
-    --enable-filter=showwavespic \
-    --enable-filter=afifo \
-    --enable-filter=abuffersink
-RUN make -j4 && make install
+    --enable-decoder=libvorbis \
+    --enable-decoder=pcm_s16be \
+    --enable-decoder=ape \
+    --enable-decoder=libfdk_aac
 
 
-FROM stagging AS stage-libmpv
+FROM ffmpeg-configure as ffmpeg-build
+RUN make -j8 && make install
+
+
+FROM stagging AS mpv-stagging
 RUN osxcross-macports install \
   libiconv \
   fribidi \
@@ -384,14 +484,14 @@ RUN osxcross-macports install \
   libarchive \
   zlib; \
   exit 0;
-COPY --from=build-ffmpeg ${PREFIX} ${PREFIX}
-RUN git clone https://github.com/mpv-player/mpv
+COPY --from=ffmpeg-build ${PREFIX} ${PREFIX}
+RUN git clone --depth 1 https://github.com/mpv-player/mpv
 ENV OSXCROSS_PKG_CONFIG_LIBDIR="/${PREFIX}/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/libexec/openssl3/lib/pkgconfig"
 WORKDIR /mpv
 RUN ./bootstrap.py
 
 
-FROM stage-libmpv AS build-libmpv
+FROM mpv-stagging AS mpv-build
 RUN \
   CC="o64-clang" \
   DEST_OS="darwin" \
@@ -403,7 +503,8 @@ RUN \
     --prefix=${PREFIX} \
     --enable-lgpl \
     --enable-cplayer \
-    --enable-libmpv-shared \
+    --disable-libmpv-shared \
+    # --enable-libmpv-shared \
     --disable-libmpv-static \
     --disable-static-build \
     --disable-debug-build \
@@ -494,21 +595,18 @@ RUN \
 RUN ./waf build -j4 && ./waf install
 
 
-FROM stagging AS stage-packaging
-RUN exit 0;
-
-
-FROM stage-packaging AS packaging
+FROM stagging AS packaging
 ENV OSXCROSS_MACPORTS_PREFIX="/opt/osxcross/macports/pkgs/opt/local"
 ENV TEMP="/opt/temp"
 ENV DEST="/opt/libmpv"
-COPY --from=build-libmpv ${PREFIX}/include ${TEMP}/include
-COPY --from=build-libmpv ${PREFIX}/lib ${TEMP}/lib
-COPY --from=build-libmpv ${PREFIX}/bin ${TEMP}/bin
+COPY --from=mpv-build ${PREFIX}/include ${TEMP}/include
+COPY --from=mpv-build ${PREFIX}/lib ${TEMP}/lib
+COPY --from=mpv-build ${PREFIX}/bin ${TEMP}/bin
 
 
 FROM packaging AS cleanup
-COPY ./src /src
+WORKDIR /
+COPY src src
 RUN ["python3", "-u", "-m", "src"]
 CMD \
   cd ${DEST} && rm -rf * && cd / && \
