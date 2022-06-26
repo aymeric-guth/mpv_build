@@ -28,21 +28,22 @@ SMPL_AIF="${NAS}/Music.ToDo/2nd\ Pass/_Jazz/Ed\ Zuccollo\ -\ Ed\ Zuccollo/Spine\
 SMPL_OPUS="${NAS}/Music.ToDo/2nd\ Pass/_Electro/02.\ NeuroKontrol\ -\ Melankotrip.opus"
 
 # libgme
-#echo "libgme .spc"
-#eval ${MPV} ${SMPL_SPC}
-#echo "libgme .gbs"
-#eval ${MPV} ${SMPL_GB}
-#echo "libgme .nsf"
-#eval ${MPV} ${SMPL_NSF}
-#echo "libgme .vgm"
-#eval ${MPV} ${SMPL_VGM}
-# eval ${MPV} ${SMPL_SAP}
+echo "libgme .spc"
+eval ${MPV} ${SMPL_SPC}
+echo "libgme .gbs"
+eval ${MPV} ${SMPL_GB}
+echo "libgme .nsf"
+eval ${MPV} ${SMPL_NSF}
+echo "libgme .vgm"
+eval ${MPV} ${SMPL_VGM}
+#echo "libgme .sap"
+#eval ${MPV} ${SMPL_SAP}
 
 # libmodplug
-#echo "libmodplug .mod"
-#eval ${MPV} ${SMPL_MOD}
-#echo "libmodplug .it"
-#eval ${MPV} ${SMPL_IT}
+echo "libmodplug .mod"
+eval ${MPV} ${SMPL_MOD}
+echo "libmodplug .it"
+eval ${MPV} ${SMPL_IT}
 
 # audio formats
 echo "audio formats .mp3"

@@ -1,0 +1,14 @@
+###### pkg-config
+```shell
+prefix=/opt/x86_64-apple-darwin18
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Fraunhofer FDK AAC Codec Library
+Description: AAC codec library
+Version: 2.0.2
+Libs: -L${libdir} -lfdk-aac
+Libs.private:
+Cflags: -I${includedir}
+```

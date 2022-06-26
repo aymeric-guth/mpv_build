@@ -1,6 +1,6 @@
 ---
-tags: [decoder, encoder, codec, audio, flac]
+tags: [decoder, encoder, codec, parser, audio, flac]
 aliases: [ff_flac_encoder, ff_flac_decoder, flac]
 ---
 depends on:
-[[ffmpeg/libavformat/flac|muxer/demuxer]]
+[[ffmpeg/libavformat/flac]]
