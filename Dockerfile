@@ -206,8 +206,9 @@ COPY --from=openmpt-build $PREFIX $PREFIX
 COPY --from=vorbis-build $PREFIX $PREFIX
 COPY --from=opus-build $PREFIX $PREFIX
 COPY --from=fdk-aac-build $PREFIX $PREFIX
-# COPY opus.pc ${PREFIX}/lib/pkgconfig/opus.pc
 WORKDIR /FFmpeg
+# COPY configure configure
+# COPY opus.pc ${PREFIX}/lib/pkgconfig/opus.pc
 
 
 FROM ffmpeg-stagging AS ffmpeg-configure
@@ -316,13 +317,13 @@ RUN \
     --disable-libdav1d \
     --disable-libdavs2 \
     --disable-libdc1394 \
-    # --disable-libfdk-aac \
+    --disable-libfdk-aac \
     --disable-libflite \
     --disable-libfontconfig \
     --disable-libfreetype \
     --disable-libfribidi \
     --disable-libglslang \
-    # --disable-libgme \
+    --disable-libgme \
     --disable-libgsm \
     --disable-libiec61883 \
     --disable-libilbc \
@@ -331,16 +332,16 @@ RUN \
     --disable-libklvanc \
     --disable-libkvazaar \
     --disable-liblensfun \
-    # --disable-libmodplug \
+    --disable-libmodplug \
     --disable-libmp3lame \
     --disable-libopencore-amrnb \
     --disable-libopencore-amrwb \
     --disable-libopencv \
     --disable-libopenh264 \
     --disable-libopenjpeg \
-    # --disable-libopenmpt \
+    --disable-libopenmpt \
     --disable-libopenvino \
-    # --disable-libopus \
+    --disable-libopus \
     --disable-libplacebo \
     --disable-libpulse \
     --disable-librabbitmq \
@@ -436,11 +437,13 @@ RUN \
     --cross-prefix=/opt/osxcross/bin/x86_64-apple-darwin18- \
     --arch=x86_64 \
     --target-os=darwin \
-    # --pkg-config= \
+    # --pkg-config="/opt/osxcross/bin/x86_64-apple-darwin18-pkg-config" \
+    # --pkg-config-flags="--silence-errors --errors-to-stdout --prefix-variable=${PREFIX}" \
     --cc=o64-clang \
     --cxx=o64-clang++ \
     --extra-cflags="-I${PREFIX}/include" \
-    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lvorbis -logg -lfdk-aac -lvorbisenc -lvorbisfile" \
+    # --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lvorbis -logg -lfdk-aac -lvorbisenc -lvorbisfile" \
+    --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lfdk-aac" \
     #######################################################################
     ### Advanced options (experts only):
     #######################################################################
@@ -460,11 +463,11 @@ RUN \
     #######################################################################
     ### Parsers:
     #######################################################################
-    --enable-parser=mpegaudio \
-    --enable-parser=flac \
-    --enable-parser=aac \
+    # --enable-parser=mpegaudio \
+    # --enable-parser=flac \
+    # --enable-parser=aac \
     # --enable-parser=opus \
-    --enable-parser=vorbis \
+    # --enable-parser=vorbis \
     # --enable-parser=dirac \
     #######################################################################
     ### (de)muxers:
@@ -475,6 +478,7 @@ RUN \
     --enable-demuxer=mp3 \
     --enable-demuxer=flac \
     --enable-demuxer=ogg \
+    --enable-demuxer=opus \
     --enable-demuxer=wav \
     --enable-demuxer=aiff \
     --enable-demuxer=ape \
@@ -489,298 +493,12 @@ RUN \
     --enable-decoder=mp3 \
     --enable-decoder=flac \
     --enable-decoder=libopus \
-    --enable-decoder=libvorbis \
+    --enable-decoder=opus \
+    # --enable-decoder=libvorbis \
     --enable-decoder=ape \
     --enable-decoder=libfdk_aac \
-    --enable-decoder=alac
-
-
-# FROM ffmpeg-stagging AS ffmpeg-configure
-# RUN \
-#   ./configure \
-#     #######################################################################
-#     ### Standard options:
-#     #######################################################################
-#     --prefix=${PREFIX} \
-#     #######################################################################
-#     ### Licensing options:
-#     #######################################################################
-#     --enable-gpl \
-#     --enable-version3 \
-#     --enable-nonfree \
-#     #######################################################################
-#     ### Configuration options:
-#     #######################################################################
-#     --disable-static \
-#     --enable-shared \
-#     --disable-small \
-#     --enable-runtime-cpudetect \
-#     --disable-gray \
-#     --disable-swscale-alpha \
-#     --enable-autodetect \
-#     #######################################################################
-#     ### Program options:
-#     #######################################################################
-#     --disable-ffmpeg \
-#     --disable-ffplay \
-#     --disable-ffprobe \
-#     #######################################################################
-#     ### Documentation options:
-#     #######################################################################
-#     --disable-doc \
-#     --disable-htmlpages \
-#     --disable-manpages \
-#     --disable-podpages \
-#     --disable-txtpages \
-#     #######################################################################
-#     ### Component options:
-#     #######################################################################
-#     --disable-avdevice \
-#     # --disable-swscale \
-#     --disable-postproc \
-#     # --disable-swresample \
-#     --disable-w32threads \
-#     --disable-os2threads \
-#     --disable-network \
-#     # Discrete Cosine Transform
-#     # --disable-dct \
-#     # Discrete Wavelet Transform
-#     # --disable-dwt \
-#     # --disable-error-resilience \ disable error resilience code
-#     # disable LSP code ???
-#     # --disable-lsp \
-#     # disable MDCT code ???
-#     # --disable-mdct \
-#     # Real Discrete Fourier Transforms
-#     # --disable-rdft \
-#     # Fast Fourier Transforms
-#     # --disable-fft \
-#     # floating point AAN (I)DCT
-#     # --disable-faan \
-#     --disable-pixelutils \
-#     #######################################################################
-#     ### Individual component options:
-#     #######################################################################
-#     --disable-encoders \
-#     --disable-decoders \
-#     --disable-hwaccels \
-#     --disable-muxers \
-#     --disable-demuxers \
-#     --disable-parsers \
-#     --disable-bsfs \
-#     --disable-protocols \
-#     --disable-devices \
-#     --disable-filters \
-#     #######################################################################
-#     ### External library support:
-#     #######################################################################
-#     --disable-alsa \
-#     --disable-appkit \
-#     --disable-avfoundation \
-#     --disable-avisynth \
-#     --disable-bzlib \
-#     --disable-coreimage \
-#     --disable-chromaprint \
-#     --disable-frei0r \
-#     --disable-gcrypt \
-#     --disable-gmp \
-#     --disable-gnutls \
-#     --disable-iconv \
-#     --disable-jni \
-#     --disable-ladspa \
-#     --disable-lcms2 \
-#     --disable-libaom \
-#     --disable-libaribb24 \
-#     --disable-libass \
-#     --disable-libbluray \
-#     --disable-libbs2b \
-#     --disable-libcaca \
-#     --disable-libcelt \
-#     --disable-libcdio \
-#     --disable-libcodec2 \
-#     --disable-libdav1d \
-#     --disable-libdavs2 \
-#     --disable-libdc1394 \
-#     --disable-libfdk-aac \
-#     --disable-libflite \
-#     --disable-libfontconfig \
-#     --disable-libfreetype \
-#     --disable-libfribidi \
-#     --disable-libglslang \
-#     # --disable-libgme \
-#     --disable-libgsm \
-#     --disable-libiec61883 \
-#     --disable-libilbc \
-#     --disable-libjack \
-#     --disable-libjxl \
-#     --disable-libklvanc \
-#     --disable-libkvazaar \
-#     --disable-liblensfun \
-#     # --disable-libmodplug \
-#     --disable-libmp3lame \
-#     --disable-libopencore-amrnb \
-#     --disable-libopencore-amrwb \
-#     --disable-libopencv \
-#     --disable-libopenh264 \
-#     --disable-libopenjpeg \
-#     --disable-libopenmpt \
-#     --disable-libopenvino \
-#     # --disable-libopus \
-#     --disable-libplacebo \
-#     --disable-libpulse \
-#     --disable-librabbitmq \
-#     --disable-librav1e \
-#     --disable-librist \
-#     --disable-librsvg \
-#     --disable-librubberband \
-#     --disable-librtmp \
-#     --disable-libshaderc \
-#     --disable-libshine \
-#     --disable-libsmbclient \
-#     --disable-libsnappy \
-#     --disable-libsoxr \
-#     --disable-libspeex \
-#     --disable-libsrt \
-#     --disable-libssh \
-#     --disable-libsvtav1 \
-#     --disable-libtensorflow \
-#     --disable-libtesseract \
-#     --disable-libtheora \
-#     --disable-libtls \
-#     --disable-libtwolame \
-#     --disable-libuavs3d \
-#     --disable-libv4l2 \
-#     --disable-libvidstab \
-#     --disable-libvmaf \
-#     --disable-libvo-amrwbenc \
-#     --disable-libvorbis \
-#     --disable-libvpx \
-#     --disable-libwebp \
-#     --disable-libx264 \
-#     --disable-libx265 \
-#     --disable-libxavs \
-#     --disable-libxavs2 \
-#     --disable-libxcb \
-#     --disable-libxcb-shm \
-#     --disable-libxcb-xfixes \
-#     --disable-libxcb-shape \
-#     --disable-libxvid \
-#     --disable-libxml2 \
-#     --disable-libzimg \
-#     --disable-libzmq \
-#     --disable-libzvbi \
-#     --disable-lv2 \
-#     --disable-lzma \
-#     --disable-decklink \
-#     --disable-mbedtls \
-#     --disable-mediacodec \
-#     --disable-mediafoundation \
-#     --disable-metal \
-#     --disable-libmysofa \
-#     --disable-openal \
-#     --disable-opencl \
-#     --disable-opengl \
-#     --disable-openssl \
-#     --disable-pocketsphinx \
-#     --disable-sndio \
-#     --disable-schannel \
-#     --disable-sdl2 \
-#     --disable-securetransport \
-#     --disable-vapoursynth \
-#     --disable-vulkan \
-#     --disable-xlib \
-#     --disable-zlib \
-#     #######################################################################
-#     ### Hardware acceleration:
-#     #######################################################################
-#     --disable-amf \
-#     --disable-audiotoolbox \
-#     --disable-cuda-nvcc \
-#     --disable-cuda-llvm \
-#     --disable-cuvid \
-#     --disable-d3d11va \
-#     --disable-dxva2 \
-#     --disable-ffnvcodec \
-#     --disable-libdrm \
-#     --disable-libmfx \
-#     --disable-libnpp \
-#     --disable-mmal \
-#     --disable-nvdec \
-#     --disable-nvenc \
-#     --disable-omx \
-#     --disable-omx-rpi \
-#     --disable-rkmpp \
-#     --disable-v4l2-m2m \
-#     --disable-vaapi \
-#     --disable-vdpau \
-#     --disable-videotoolbox \
-#     #######################################################################
-#     ### Toolchain options:
-#     #######################################################################
-#     --arch=x86_64 \
-#     --target-os=darwin \
-#     --cross-prefix=x86_64-apple-darwin18- \
-#     --enable-cross-compile \
-#     # --pkg-config= \
-#     --extra-libs="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lvorbis -logg -lfdk-aac -lvorbisenc -lvorbisfile" \
-#     # --toolchain=x86_64-apple-darwin18- \
-#     # --sysroot=${OSXCROSS_TARGET_DIR}/macports/sysroot \
-#     # --sysinclude= \
-#     --cc=o64-clang \
-#     --cxx=o64-clang++ \
-#     --extra-cflags="-I${PREFIX}/include" \
-#     --extra-ldflags="-L${PREFIX}/lib -lgme -lmodplug -lopus -lopenmpt -lvorbis -logg -lfdk-aac -lvorbisenc -lvorbisfile" \
-#     #######################################################################
-#     ### Advanced options (experts only):
-#     #######################################################################
-#     #######################################################################
-#     ### Optimization options (experts only):
-#     #######################################################################
-#     --disable-asm \
-#     #######################################################################
-#     ### Parsers:
-#     #######################################################################
-#     --enable-parser=mpegaudio \
-#     --enable-parser=flac \
-#     --enable-parser=aac \
-#     --enable-parser=opus \
-#     --enable-parser=vorbis \
-#     #######################################################################
-#     ### External Libraries:
-#     #######################################################################
-#     --enable-libgme \
-#     # --enable-libmodplug \
-#     --enable-libopenmpt \
-#     --enable-libvorbis \
-#     --enable-libopus \
-#     --enable-libfdk-aac \
-#     #######################################################################
-#     ### (de)muxers:
-#     #######################################################################
-#     --enable-demuxer=libgme \
-#     # --enable-demuxer=libmodplug \
-#     --enable-demuxer=libopenmpt \
-#     --enable-demuxer=mp3 \
-#     --enable-demuxer=flac \
-#     --enable-demuxer=ogg \
-#     --enable-demuxer=wav \
-#     --enable-demuxer=aiff \
-#     --enable-demuxer=ape \
-#     --enable-demuxer=mov \
-#     #######################################################################
-#     ### Codecs:
-#     #######################################################################
-#     --enable-decoder=pcm_s16le \
-#     --enable-decoder=pcm_s16be \
-#     --enable-decoder=pcm_s24be \
-#     --enable-decoder=pcm_f32le \
-#     --enable-decoder=mp3 \
-#     --enable-decoder=flac \
-#     --enable-decoder=libopus \
-#     --enable-decoder=libvorbis \
-#     --enable-decoder=ape \
-#     --enable-decoder=libfdk_aac \
-#     --enable-decoder=alac
+    --enable-decoder=alac \
+    --enable-decoder=vorbis
 
 
 FROM ffmpeg-configure as ffmpeg-build
@@ -815,7 +533,7 @@ RUN \
     #######################################################################
     --enable-lgpl \
     --enable-cplayer \
-    --disable-libmpv-shared \
+    --enable-libmpv-shared \
     --disable-libmpv-static \
     --disable-static-build \
     --disable-build-date \

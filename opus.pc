@@ -13,4 +13,4 @@ Requires:
 Conflicts:
 Libs: -L${libdir} -lopus
 Libs.private:
-Cflags: -I${includedir}
+Cflags: -I${includedir}/opus
