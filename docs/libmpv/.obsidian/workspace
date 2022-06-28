@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "xiph/vorbis/build.md",
+            "file": "openmpt/formats.md",
             "mode": "source",
             "source": false
           }
@@ -69,7 +69,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "xiph/vorbis/build.md",
+                "file": "openmpt/formats.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -89,6 +89,7 @@
   },
   "active": "8855e69e1b665121",
   "lastOpenFiles": [
+    "openmpt/formats.md",
     "xiph/vorbis/build.md",
     "xiph/ogg/build.md",
     "xiph/opus/build.md",
@@ -97,7 +98,6 @@
     "xiph/opus/opus.md",
     "ToDo.md",
     "ffmpeg/ffmpeg.md",
-    "ffmpeg/configure.md",
-    "build/pkg-config.md"
+    "ffmpeg/configure.md"
   ]
 }

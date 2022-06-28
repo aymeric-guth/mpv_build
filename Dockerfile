@@ -80,7 +80,7 @@ RUN osxcross-macports install \
   exit 0;
 RUN git clone --depth 1 https://github.com/OpenMPT/openmpt
 WORKDIR /openmpt
-COPY openmpt.Makefile Makefile
+COPY patchs/openmpt/Makefile Makefile
 
 
 FROM openmpt-stagging AS openmpt-build

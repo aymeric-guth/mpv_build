@@ -283,4 +283,4 @@ cython_debug/
 pymakr.conf
 .atom/
 x86_64-apple-darwin18/
-data/
+testfiles
