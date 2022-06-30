@@ -28,25 +28,9 @@ RUN printf '1\n' | osxcross-macports; exit 0;
 
 
 FROM stagging AS openmpt-stagging
-#RUN osxcross-macports fake-install \
-#  libedit-20210910 \
-#  graphviz; \
-#  exit 0;
 RUN osxcross-macports install \
   clang-14; \
   exit 0;
-#  zlib \
-#  boost \
-#  openssl \
-#  libogg \
-#  libvorbis \
-#  ffmpeg \
-#  libmicrohttpd \
-#  lame \
-#  libev \
-#  taglib \
-#  clang-14; \
-#  exit 0;
 RUN git clone --depth 1 https://github.com/OpenMPT/openmpt
 WORKDIR /openmpt
 COPY Makefile Makefile
@@ -58,8 +42,8 @@ RUN \
   make -j8 && make install
 
 
-#FROM openmpt-build
-#CMD \
-#  cp -a "${PREFIX}/lib" "${PREFIX}_" && \
-#  cp -a "${PREFIX}/include" "${PREFIX}_/include" && \
-#  chown -R 1000:1000 "${PREFIX}_"
+FROM openmpt-build
+CMD \
+  cp -a "${PREFIX}/lib" "${PREFIX}_" && \
+  cp -a "${PREFIX}/include" "${PREFIX}_/include" && \
+  chown -R 1000:1000 "${PREFIX}_"
