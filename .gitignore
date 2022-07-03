@@ -285,3 +285,5 @@ pymakr.conf
 x86_64-apple-darwin18/
 testfiles/
 scripts/
+docs/
+
