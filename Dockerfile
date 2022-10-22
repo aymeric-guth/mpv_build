@@ -197,7 +197,7 @@ FROM stagging AS ffmpeg-stagging
 #   libbluray \
 #   openssl11; \
 #   exit 0;
-RUN git clone --depth 1 https://github.com/FFmpeg/FFmpeg
+RUN git clone --depth 2 https://github.com/FFmpeg/FFmpeg
 # ENV OSXCROSS_PKG_CONFIG_LIBDIR="/${PREFIX}/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/lib/pkgconfig:${OSXCROSS_TARGET_DIR}/macports/pkgs/opt/local/libexec/openssl3/lib/pkgconfig"
 ENV OSXCROSS_PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig"
 COPY --from=gme-build $PREFIX $PREFIX
@@ -676,13 +676,13 @@ COPY --from=mpv-build ${PREFIX}/lib ${TEMP}/lib
 COPY --from=mpv-build ${PREFIX}/bin ${TEMP}/bin
 
 
-FROM packaging AS cleanup
-WORKDIR /
-COPY src src
-RUN ["python3", "-u", "-m", "src"]
-CMD \
-  cd ${DEST} && rm -rf * && cd / && \
-  cp -a ${TEMP}/lib ${DEST} && \
-  cp -a ${TEMP}/include ${DEST} && \
-  cp -a ${TEMP}/bin ${DEST} && \
-  chown -R 1000:1000 ${DEST}
+# FROM packaging AS cleanup
+# WORKDIR /
+# COPY src src
+# RUN ["python3", "-u", "-m", "src"]
+# CMD \
+#   cd ${DEST} && rm -rf * && cd / && \
+#   cp -a ${TEMP}/lib ${DEST} && \
+#   cp -a ${TEMP}/include ${DEST} && \
+#   cp -a ${TEMP}/bin ${DEST} && \
+#   chown -R 1000:1000 ${DEST}
